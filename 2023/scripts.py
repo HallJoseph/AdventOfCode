@@ -2,11 +2,15 @@ import re
 import sys
 
 
-def day_one():
-    with open("inputs/day_one.txt") as f:
+def load_input(path):
+    with open(path) as f:
         text = f.read()
     row_list = text.split("\n")
-    print(row_list)
+    return row_list
+
+
+def day_one():
+    row_list = load_input("inputs/day_one.txt")
 
     # Part one
     tot = 0
@@ -49,9 +53,62 @@ def day_one():
     print(tot2)
 
 
+def day_two():
+    row_list = load_input("inputs/day_two.txt")
+    maxes = {
+        'red': 12,
+        'green': 13,
+        'blue': 14
+    }
+
+    tot = 0
+    tot_games = 0
+    for game in row_list:
+        game_possible = True
+        tot_games += 1
+        for game_round in game.split(";"):
+            for colour in maxes.keys():
+                nums_col = re.findall(f'[0-9]* {colour}', game_round)
+                if len(nums_col) == 0:
+                    continue
+                col_tot = int(nums_col[0].split(' ')[0])
+                if col_tot > maxes[colour]:
+                    game_possible = False
+                    break
+
+            if not game_possible:
+                break
+
+        if game_possible:
+            tot += int(game.split(':')[0].split(' ')[-1])
+
+    print(tot)
+
+    tot2 = 0
+
+    for game in row_list:
+        mins = {
+            'red': 0,
+            'green': 0,
+            'blue': 0
+        }
+        prod = 1
+
+        for colour in mins.keys():
+            nums_col = re.findall(f'[0-9]* {colour}', game)
+            col_tot = [int(x.split(' ')[0]) for x in nums_col]
+            prod *= max(col_tot)
+
+        tot2 += prod
+
+    print(tot2)
+    pass
+
+
 def main(func_num):
     funcs = {
-        1: day_one
+        1: day_one,
+        2: day_two
     }
     funcs[int(func_num)]()
 
