@@ -1,5 +1,5 @@
-import pandas as pd
 import numpy as np
+import tqdm
 
 
 def bubbly_sorty(arr):
@@ -44,5 +44,22 @@ def distance_calculator(data_path):
     print(total_distance)
 
 
+def similarity_calculator(data_path):
+    # Load the data
+    inp_data = np.loadtxt(data_path).transpose()
+
+    # Get the two columns and sort them
+    col_a = inp_data[0]
+    col_b = inp_data[1]
+
+    # Iterate over col A, count how many times it appears in col B and do multiply-addy stuff
+    total = 0
+    for x in tqdm.tqdm(col_a):
+        count_b = np.sum(col_b == x)
+        total += x * count_b
+
+    print(total)
+
+
 if __name__ == '__main__':
-    distance_calculator('test-input.txt')
+    similarity_calculator('input-01.txt')
