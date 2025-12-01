@@ -3,7 +3,6 @@
 
 
 def part_1(input_path="2025/day-01/input-01.txt"):
-
     with open(input_path, "r") as f:
         pass_code = f.readlines()
 
@@ -12,7 +11,7 @@ def part_1(input_path="2025/day-01/input-01.txt"):
     for line in pass_code:
         # Extract number of clicks
         n_clicks = int(line[1:-1])
-        # Pass direction
+        # Parse direction
         if line[0].upper() == "L":
             tot -= n_clicks
         else:
@@ -21,14 +20,12 @@ def part_1(input_path="2025/day-01/input-01.txt"):
         # Check to see if at 0
         if (tot % 100) == 0:
             pwd += 1
-        print(tot)
     
     print(pwd)
     return
 
 
 def part_2(input_path="2025/day-01/input-01.txt"):
-
     with open(input_path, "r") as f:
         pass_code = f.readlines()
 
@@ -38,8 +35,10 @@ def part_2(input_path="2025/day-01/input-01.txt"):
         # Extract number of clicks
         n_clicks = int(line[1:-1])
 
-        # This is a terrible solution, but yeet
+        # Parse direction
         positive = line[0].upper() == "R"
+
+        # This is a terrible solution, but yeet
         for click in range(n_clicks):
             tot = tot + 1 if positive else tot - 1
             # Check to see if at 0
