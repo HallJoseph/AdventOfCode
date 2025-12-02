@@ -1,6 +1,9 @@
 # Day 2 code for AoC
 # Created 2025-12-01 by Joseph Hall
 
+import re
+
+
 def part_1(input_list):
     invalid_tot = 0
     
@@ -26,7 +29,28 @@ def part_1(input_list):
     return
 
 
-def part_2():
+def part_2(input_list):
+    invalid_tot = 0
+    id_list = []
+    
+    # Iterate over the ID ranges
+    for id_range in input_list:
+        lo_hi = id_range.split('-')
+        lo_id, hi_id = int(lo_hi[0]), int(lo_hi[1])
+
+        # Create list of IDs
+        id_range_list = [str(x) for x in range(lo_id, hi_id+1)]
+
+        id_list += id_range_list
+
+    # Parse the list with regex
+    false_id = re.finditer(r"\b([0-9]+?)\1+\b", " ".join(id_list))
+    false_id_ints = [int(x.group()) for x in false_id]
+    
+
+    # Sum the false IDs
+    part_2_sol = sum(false_id_ints)
+    print("Part 2 soln:", part_2_sol)
     return
 
 
@@ -36,6 +60,7 @@ def main(input_path="2025/day-02/input-02.txt"):
     input_list = input_data.split(",")
     
     part_1(input_list)
+    part_2(input_list)
     return
 
 
