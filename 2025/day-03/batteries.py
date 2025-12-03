@@ -10,6 +10,12 @@ def part_2(input_data):
 
 
 def main(input_path="2025/day-03/input-03.txt"):
+    # Load the input data
+    with open(input_path, "r") as f:
+        input_data = f.readlines()
+
+    input_data = [[int(x) for x in y[:-1]] for y in input_data]
+    
     return
 
 
