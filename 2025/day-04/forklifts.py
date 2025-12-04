@@ -2,25 +2,44 @@
 # Created: 2025-12-04, by Joseph Hall
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def part_1(input_data):
     # Find all rolls
     roll_mask = input_data.nonzero()
+    print(len(roll_mask[0]))
     print(roll_mask)
     
     # Define a 3x3 mask
     total_accessible = 0
+    to_remove = []
     # For each roll, count adjacent rolls
     for roll_x, roll_y in zip(roll_mask[0], roll_mask[1]):
         adjacent_sector = (input_data[roll_x-1:roll_x+2, roll_y-1:roll_y+2])
         if np.sum(adjacent_sector) <= 4:
             total_accessible += 1
-    print(total_accessible)
-    return
+            to_remove.append([roll_x, roll_y])
+    # Turn off if doing part 2
+    # print("Part 1 solution:", total_accessible)
+    return total_accessible, to_remove
 
 
 def part_2(input_data):
+    can_remove = True
+    n_removed = 0
+    while can_remove:
+        plt.imshow(input_data)
+        #plt.show()
+        n_access, to_remove = part_1(input_data)
+        print(n_access)
+        print(len(to_remove))
+        if n_access == 0:
+            break
+        n_removed += n_access
+        input_data[*np.transpose(to_remove)] = 0
+
+    print("Part 2 solution:", n_removed)
     return
 
 
@@ -34,7 +53,7 @@ def main(input_path="2025/day-04/input-04.txt"):
     input_data = np.zeros((len(input_lines) + 2, len(input_lines[0])), dtype="int")
     
     input_data[1:-1] = input_lines
-    part_1(input_data)
+    part_2(input_data)
     return
 
 
