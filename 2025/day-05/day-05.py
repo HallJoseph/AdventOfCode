@@ -20,14 +20,27 @@ def part_1(ranges, ids):
         if sum(combine_mask) != 0:
             n_fresh += 1
     print("Part 1 solution:", n_fresh)
-    return
+    return combine_mask
 
 
 def part_2(input_data):
-    # We want to find all the overlapping ranges, I have an idea for how to do this using my solution 
+    # We want to find all the overlapping ranges, I have an idea for how to do this using my solution
     # for part 1 but not sure if it will work
 
-    
+    # TL;DR for each lim, see if it is in the band of another range and replace it with that limit
+    #   i.e. condsider the ranges: 10-14, 16-20 & 12-18. 16 falls in the range 12-18 and we can replace it,
+    #       similarly, 18 is in the range 16-20 and can be replaced, lastly 12 is in the range 10-14 and 14 is
+    #       in the range of 12-18 so we can update both of those. The updated array is then:
+    #       10-14, 12-20 & 10-20. Repeating this process brings 12-->10 and 14-->20 giving three identical
+    #       ranges: 10-20, 10-20 & 10-20. We then turn this into one range by droppind duplicates.
+    #
+    #       When no more overlapping ranges can be found we subtract the high and low ends of each remaining range
+    #       to get the Number of IDs and sum
+    #
+    #       Potential simplification?
+    #           If 2 ranges share one limit (e.g. upper) we can replace the other limit with the more extreme (e.g. lower).
+    #           In the example above, after updating 10-14 and 10-20 both share 10 so 14-->20 and 12-20 both share 20 so
+    #           12-->10.
     return
 
 
