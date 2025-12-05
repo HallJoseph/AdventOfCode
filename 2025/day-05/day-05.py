@@ -49,7 +49,6 @@ def part_2(input_data):
     n_iter = 0
     while np.sum(np.abs(ranges - prev_ranges)) != 0:
         n_iter += 1
-        print(ranges - prev_ranges)
         prev_ranges = ranges.copy()
         new_ranges = np.zeros_like(ranges)
         for lind, lims in enumerate(ranges.transpose()):
@@ -120,7 +119,10 @@ def main(input_path="2025/day-05/input-05.txt"):
     print(range_lims_arr)
 
     part_1(range_lims_arr, ids)
+    import time
+    ts = time.time()
     part_2(range_lims_arr)
+    print("time takens (s)", time.time() - ts)
     
     # Process ranges DON'T DO THIS IT EATS RAM
     #full_ranges = []
