@@ -41,6 +41,64 @@ def part_2(input_data):
     #           If 2 ranges share one limit (e.g. upper) we can replace the other limit with the more extreme (e.g. lower).
     #           In the example above, after updating 10-14 and 10-20 both share 10 so 14-->20 and 12-20 both share 20 so
     #           12-->10.
+
+    ranges = input_data.copy()
+    prev_ranges = ranges.copy() + 1
+    update_done = True
+    print(ranges.transpose())
+    n_iter = 0
+    while np.sum(np.abs(ranges - prev_ranges)) != 0:
+        n_iter += 1
+        print(ranges - prev_ranges)
+        prev_ranges = ranges.copy()
+        new_ranges = np.zeros_like(ranges)
+        for lind, lims in enumerate(ranges.transpose()):
+            # Mask where low ends less than current low end
+            lo_mins_mask = ranges[0] <= lims[0]
+            # Mask where hi ends greater than current
+            lo_maxs_mask = ranges[1] >= lims[0]
+            # Combine for new lows
+            new_lo_mask = lo_mins_mask & lo_maxs_mask
+            print(new_lo_mask)
+
+            # Mask where low ends less than current high end
+            hi_mins_mask = ranges[0] <= lims[1]
+            # Mask where hi ends greater than current
+            hi_maxs_mask = ranges[1] >= lims[1]
+            # Combine for new lows
+            new_hi_mask = hi_mins_mask & hi_maxs_mask
+            #print(new_hi_mask)
+
+            # Update the ranges
+            new_lo = min(ranges[0][new_lo_mask])
+            print(lims[0], new_lo)
+            new_hi = max(ranges[1][new_hi_mask])
+            print(lims[1], new_hi)
+            new_ranges[0, lind] = new_lo
+            new_ranges[1, lind] = new_hi
+        
+        print(new_ranges.transpose())
+        ranges = new_ranges.copy()
+            
+        
+    print(len(ranges.transpose()))
+    print(n_iter)
+
+    # remove duplicates
+    final_lims = [[], []]
+    for lims in ranges.transpose():
+        if lims[0] not in final_lims[0]:
+            final_lims[0].append(lims[0])
+            final_lims[1].append(lims[1])
+    
+    print(np.transpose(final_lims))
+    # Find diff between high and low
+    lims_arr = np.array(final_lims)
+    lims_diff = lims_arr[1] - lims_arr[0]
+    # Plus lims diff to deal with off by one errs
+    total_ids = np.sum(lims_diff) + len(lims_diff)
+
+    print("Part 2 solution:", total_ids)
     return
 
 
