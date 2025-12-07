@@ -18,6 +18,29 @@ def part_1(numbers, operations):
 
 
 def part_2(input_data):
+    # Reparse the input
+    restruct = np.transpose([list(x)[::-1][1:] for x in input_data])
+    print(restruct)
+    # Holding for numbers and total
+    numbers = []
+    total = 0
+    
+    for number in restruct:
+        if any(number != " "):
+            new_num = int(' '.join(number[:-1]).replace(' ', ''))
+            numbers.append(new_num)
+        op = number[-1]
+
+        if op == " ":
+            continue
+
+        elif op == "+":
+            total += np.sum(numbers)
+        elif op == "*":
+            total += np.prod(numbers)
+        numbers = []
+    
+    print("Part 2 sol:", total)
     return
 
 
@@ -35,6 +58,7 @@ def main(input_path="2025/day-06/input-06.txt"):
     numbers = np.array(input_data_final[:-1], dtype=int).transpose()
     operations = input_data_final[-1]
     part_1(numbers, operations)
+    part_2(input_data)
     return
 
 
