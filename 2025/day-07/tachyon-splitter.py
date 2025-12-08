@@ -2,6 +2,7 @@
 # Created: 2025-12-07, by Joseph Hall
 
 import numpy as np
+import time
 import matplotlib.pyplot as plt
 from matplotlib import animation
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -74,6 +75,7 @@ def part_1(input_data):
 
 
 def part_2(input_data):
+    start = time.time()
     # Create a matrix to store number of timelines each splitter produces
     cache_matrix = np.ones_like(input_data, dtype=int)
     vis_arrs = [cache_matrix.copy()]
@@ -98,7 +100,7 @@ def part_2(input_data):
         vis_arrs.append(cache_matrix.copy())
 
     # Print solution as last value at position corresponding to S in last row of cache matrix
-    print("Part 2 solution:", cache_matrix[-1][input_data[0]=="S"])
+    print("Part 2 solution:", cache_matrix[-1][input_data[0]=="S"], "found in:", time.time()-start, "s")
     animate(vis_arrs)
     return
 
