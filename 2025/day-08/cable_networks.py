@@ -62,11 +62,6 @@ def part_1(input_data):
 
             print("Part 2 sol:", final_x1 * final_x2)
             break
-
-    return
-
-
-def part_2(input_data):
     return
 
 
