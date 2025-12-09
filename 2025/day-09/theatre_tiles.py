@@ -4,6 +4,7 @@
 import numpy as np
 import pandas as pd
 import tqdm
+import matplotlib.pyplot as plt
 
 def part_1(input_data):
     # Find distances between all pairs of nodes
@@ -31,7 +32,34 @@ def part_1(input_data):
     ).sort_values(by="areas", ascending=False)
 
     print("Part 1 sol:", areas_df["areas"].values[0])
-    return
+    return part_2(input_data, areas_df)
+
+
+def part_2(input_data, areas_df):
+    # Transpose the input
+    input_transpose = input_data.transpose()
+
+    # Offset the input coords to minimise grid size (minor but should work
+    red_tile_coords = np.array([input_transpose[0]-np.min(input_transpose[0]), input_transpose[1]-np.min(input_transpose[1])], dtype=int)
+    red_tiles_indiv = red_tile_coords.transpose()
+    
+    # Define our gird based on the red_tile_coords
+    tile_grid = np.zeros((np.max(red_tile_coords[0])+1, np.max(red_tile_coords[1])+1)).transpose()
+    print(tile_grid.shape)
+
+    # Mark red tiles
+    tile_grid[red_tile_coords] = 1
+    print("Red tiles marked")
+
+    # Mark connecting green tiles
+    for rind, red_tile in red_tiles_indiv:
+        next_tile = red_tiles_indiv[rind] + 1
+        diff = next_tile - red_tile
+
+        # Find which axis to set as green tiles
+        zero_index = (diff == 0).nonzero[0]
+        print(zero_index)
+        return
 
 
 def main(input_path="2025/day-09/input-09.txt"):
