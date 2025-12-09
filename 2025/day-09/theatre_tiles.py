@@ -8,27 +8,29 @@ import tqdm
 def part_1(input_data):
     # Find distances between all pairs of nodes
     input_size = len(input_data)
-    dists = []
+    areas = []
     starts = []
     ends = []
     for nind, node in enumerate(tqdm.tqdm(input_data)):
-        node_dists = np.sqrt(np.sum((input_data[nind+1:] - node)**2, axis=1)).tolist()
-        node_starts = [nind] * (input_size-(nind+1))
-        node_ends = [x for x in range(nind+1, input_size)]
+        other_tiles = input_data[nind+1:].transpose()
+        rect_areas = (np.abs(1+node[0] - other_tiles[0]) * np.abs(1+node[1] - other_tiles[1])).tolist()
+        rect_starts = [nind] * (input_size-(nind+1))
+        rect_ends = list(range(nind+1, input_size))
         
-        dists += node_dists
-        starts += node_starts
-        ends += node_ends
+        areas += rect_areas
+        starts += rect_starts
+        ends += rect_ends
     
     # Convert to dataframe
-    dists_df = pd.DataFrame.from_records(
+    areas_df = pd.DataFrame.from_records(
         {
             "starts": starts,
             "ends": ends,
-            "dists": dists
+            "areas": areas
         }
-    ).sort_values(by="dists")
+    ).sort_values(by="areas", ascending=False)
 
+    print("Part 1 sol:", areas_df["areas"].values[0])
     return
 
 
