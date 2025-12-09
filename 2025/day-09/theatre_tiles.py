@@ -40,7 +40,8 @@ def part_2(input_data, areas_df):
     input_transpose = input_data.transpose()
 
     # Offset the input coords to minimise grid size (minor but should work
-    red_tile_coords = np.array([input_transpose[0]-np.min(input_transpose[0]), input_transpose[1]-np.min(input_transpose[1])], dtype=int)
+    # red_tile_coords = np.array([input_transpose[0]-np.min(input_transpose[0]), input_transpose[1]-np.min(input_transpose[1])], dtype=int)
+    red_tile_coords = input_transpose.copy().astype(int)
     red_tiles_indiv = red_tile_coords.transpose()
     
     # Define our gird based on the red_tile_coords
@@ -66,18 +67,51 @@ def part_2(input_data, areas_df):
         else:
             first_ind, second_ind = red_tile[non_zero_ind], next_tile[non_zero_ind]
 
-        #print(tile_grid[red_tile[1]-5:red_tile[1]+5, red_tile[0]-5:red_tile[0]+5])
+        # Mark the edge tiles
         if zero_index == 0:
             tile_grid[first_ind:second_ind, red_tile[0]] = True
         elif zero_index == 1:
             tile_grid[red_tile[1], first_ind:second_ind] = True
         else:
             raise ValueError(f"BAD ZERO INDEX {zero_index}")
-        #print(zero_index)
         
     print("Green Tiles marked")
-    
 
+    print(edges_marked)
+
+    print(len(areas_df))    
+    # Iterate through rectangles in descending size order, check if border enters rectangle at any point
+    for rectangle in tqdm.tqdm(areas_df[177:].iloc()):
+        vert_1, vert_2 = red_tiles_indiv[int(rectangle["starts"])], red_tiles_indiv[int(rectangle["ends"])]
+        
+        # Find order to define vertices
+        vert_diff = vert_1 - vert_2
+        
+        if vert_diff[0] > 0:
+            x1, x2 = vert_2[0], vert_1[0]
+        elif vert_diff[1] < 0:
+            x1, x2 = vert_1[0], vert_2[0]
+        
+        if vert_diff[1] > 0:
+            y1, y2 = vert_2[1], vert_1[1]
+        else:
+            y1, y2 = vert_1[1], vert_2[1]
+
+        # Get rectangle from full grid
+        test_rect = tile_grid[int(y1+1):int(y2), int(x1+1):int(x2)]
+        # print()
+        # print(tile_grid)
+        # print(test_rect)
+        # print(test_rect[1:-1, 1:-1])
+
+        # If all in rectangle is False, return size of rectangle
+        if not test_rect.any():
+            print(rectangle, vert_1, vert_2, vert_diff)
+            print(x1, x2)
+            print(y1, y2)
+            rect_area = rectangle["areas"]
+            break
+    print("Part 2 sol:", rect_area)
     return
 
 
