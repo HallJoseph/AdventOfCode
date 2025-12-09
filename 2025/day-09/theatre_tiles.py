@@ -44,22 +44,41 @@ def part_2(input_data, areas_df):
     red_tiles_indiv = red_tile_coords.transpose()
     
     # Define our gird based on the red_tile_coords
-    tile_grid = np.zeros((np.max(red_tile_coords[0])+1, np.max(red_tile_coords[1])+1)).transpose()
+    tile_grid = np.zeros((np.max(red_tile_coords[1])+1, np.max(red_tile_coords[0])+1), dtype=bool)
     print(tile_grid.shape)
 
     # Mark red tiles
-    tile_grid[red_tile_coords] = 1
+    tile_grid[red_tile_coords[1], red_tile_coords[0]] = True
     print("Red tiles marked")
 
     # Mark connecting green tiles
-    for rind, red_tile in red_tiles_indiv:
-        next_tile = red_tiles_indiv[rind] + 1
+    for rind, red_tile in enumerate(tqdm.tqdm(red_tiles_indiv)):
+        next_tile = red_tiles_indiv[rind + 1] if rind+1 != len(red_tiles_indiv) else red_tiles_indiv[0]
         diff = next_tile - red_tile
 
         # Find which axis to set as green tiles
-        zero_index = (diff == 0).nonzero[0]
-        print(zero_index)
-        return
+        zero_index = (diff == 0).nonzero()[0][0]
+        non_zero_ind = (diff != 0).nonzero()[0][0]
+
+        # Which direction to fill, less than zero next tile first
+        if diff[non_zero_ind] < 0:
+            first_ind, second_ind = next_tile[non_zero_ind], red_tile[non_zero_ind]
+        else:
+            first_ind, second_ind = red_tile[non_zero_ind], next_tile[non_zero_ind]
+
+        #print(tile_grid[red_tile[1]-5:red_tile[1]+5, red_tile[0]-5:red_tile[0]+5])
+        if zero_index == 0:
+            tile_grid[first_ind:second_ind, red_tile[0]] = True
+        elif zero_index == 1:
+            tile_grid[red_tile[1], first_ind:second_ind] = True
+        else:
+            raise ValueError(f"BAD ZERO INDEX {zero_index}")
+        #print(zero_index)
+        
+    print("Green Tiles marked")
+    
+
+    return
 
 
 def main(input_path="2025/day-09/input-09.txt"):
