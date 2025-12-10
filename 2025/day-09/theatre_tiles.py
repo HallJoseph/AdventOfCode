@@ -77,40 +77,38 @@ def part_2(input_data, areas_df):
         
     print("Green Tiles marked")
 
+    edges_marked = np.array(tile_grid.nonzero())
     print(edges_marked)
 
     print(len(areas_df))    
     # Iterate through rectangles in descending size order, check if border enters rectangle at any point
-    for rectangle in tqdm.tqdm(areas_df[177:].iloc()):
+    for rectangle in tqdm.tqdm(areas_df.iloc()):
         vert_1, vert_2 = red_tiles_indiv[int(rectangle["starts"])], red_tiles_indiv[int(rectangle["ends"])]
-        
+
         # Find order to define vertices
         vert_diff = vert_1 - vert_2
-        
+
         if vert_diff[0] > 0:
             x1, x2 = vert_2[0], vert_1[0]
-        elif vert_diff[1] < 0:
+        else:
             x1, x2 = vert_1[0], vert_2[0]
-        
+
         if vert_diff[1] > 0:
             y1, y2 = vert_2[1], vert_1[1]
         else:
             y1, y2 = vert_1[1], vert_2[1]
 
-        # Get rectangle from full grid
-        test_rect = tile_grid[int(y1+1):int(y2), int(x1+1):int(x2)]
-        # print()
-        # print(tile_grid)
-        # print(test_rect)
-        # print(test_rect[1:-1, 1:-1])
+        # Check edges to see if in grid
+        y_edges_mask = (y1 < edges_marked[0]) & (edges_marked[0] < y2)
+        x_edges_mask = (x1 < edges_marked[1]) & (edges_marked[1] < x2)
 
-        # If all in rectangle is False, return size of rectangle
-        if not test_rect.any():
-            print(rectangle, vert_1, vert_2, vert_diff)
-            print(x1, x2)
-            print(y1, y2)
-            rect_area = rectangle["areas"]
+        combined_mask = y_edges_mask & x_edges_mask
+        
+        if not combined_mask.any():
+            # Recalculate area as value in table may have been floating pointed
+            rect_area = (np.abs(vert_diff[0]) + 1) * (np.abs(vert_diff[1]) + 1)
             break
+
     print("Part 2 sol:", rect_area)
     return
 
