@@ -122,30 +122,34 @@ def part_2(input_data):
         # Turn inputs into a list of tuples of ints
         input_inds = [np.array(tuple(y.replace(',', '')), dtype=int) for y in inputs]
 
-        pl_var = [pl.LpVariable(f"x{ind}", cat="Integer") for ind in range(len(input_inds))]
+        pl_var = [pl.LpVariable(f"x{ind}", cat="Integer") for ind in range(len(input_inds)+1)] # Add an extra
 
         # Get our input matrix
         mat_in = np.zeros((len(required_jolts), len(input_inds)), dtype=object)
         for iind, inds in enumerate(input_inds):
             for ind in inds:
                 mat_in[ind][iind] = 1 * pl_var[iind]
-            
+                
         print(pl_var)
         print()
         for button in mat_in.transpose():
             print(button)
         print()
         print(mat_in.transpose())
-        print()
+        print(pl.LpMinimize)
         prob = pl.LpProblem("buttons", pl.LpMinimize)
         mat_summed = np.sum(mat_in, axis=1)
         for rind, row in enumerate(mat_summed):
             print(f"{row} = {required_jolts[rind]}")
             prob += row == required_jolts[rind]
-        prob += sum(pl_var) >= 0
+        
+
+        prob += sum(pl_var[:-1]) == pl_var[-1]
+
         for var in pl_var:
             prob += var >= 0
-        status = prob.solve(pl.GLPK(msg = 0))
+        print(prob)
+        status = prob.solve()
         # print(status)
 
         print([(x, pl.value(x)) for x in pl_var])
@@ -155,7 +159,7 @@ def part_2(input_data):
     return
 
 
-def main(input_path="2025/day-10/test-input-10.txt"):
+def main(input_path="test-input-10.txt"):
     with open(input_path, "r") as f:
         input_data = f.readlines()
     
