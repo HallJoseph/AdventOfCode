@@ -6,7 +6,7 @@ import itertools
 import tqdm
 from multiprocessing import Pool
 from scipy.optimize import lsq_linear
-import pulp as pl
+import highspy
 
 def part_1(input_data):
     req_presses = 0
@@ -108,8 +108,11 @@ def part_2(input_data):
     # e.g using row 1 of test input (parantheses represent +1 to that index):
     #   {3,5,4,7} = n*(3) + m*(1,3) + o*(2) + p*(2,3) + q*(0,2) + r*(0,1),
     #   where n = 1, m = 3, o = 0, p = 3, q = 1, r = 2 for a total of 10 presses
-
+    presses = 0
     for row in tqdm.tqdm(input_data):
+        # Define the HiGHS model
+        h = highspy.Highs()
+
         # Parse row info
         split_lights = row.split("]")
         lights = split_lights[0][1:]
@@ -122,44 +125,25 @@ def part_2(input_data):
         # Turn inputs into a list of tuples of ints
         input_inds = [np.array(tuple(y.replace(',', '')), dtype=int) for y in inputs]
 
-        pl_var = [pl.LpVariable(f"x{ind}", cat="Integer") for ind in range(len(input_inds)+1)] # Add an extra
+        hi_vars = [h.addVariable(type=highspy.HighsVarType.kInteger, name="x0") for ind in range(len(input_inds))]
 
         # Get our input matrix
         mat_in = np.zeros((len(required_jolts), len(input_inds)), dtype=object)
         for iind, inds in enumerate(input_inds):
             for ind in inds:
-                mat_in[ind][iind] = 1 * pl_var[iind]
-                
-        print(pl_var)
-        print()
-        for button in mat_in.transpose():
-            print(button)
-        print()
-        print(mat_in.transpose())
-        print(pl.LpMinimize)
-        prob = pl.LpProblem("buttons", pl.LpMinimize)
-        mat_summed = np.sum(mat_in, axis=1)
-        for rind, row in enumerate(mat_summed):
-            print(f"{row} = {required_jolts[rind]}")
-            prob += row == required_jolts[rind]
+                mat_in[ind][iind] = 1 * hi_vars[iind]
+        print(mat_in)
+        for bind, buttons in enumerate(mat_in):
+            h.addConstr(sum(buttons) == int(required_jolts[bind]))
         
+        h.minimize(sum(hi_vars))
+        presses += h.getObjectiveValue()
 
-        prob += sum(pl_var[:-1]) == pl_var[-1]
-
-        for var in pl_var:
-            prob += var >= 0
-        print(prob)
-        status = prob.solve()
-        # print(status)
-
-        print([(x, pl.value(x)) for x in pl_var])
-        print()
-        return
-
+    print(presses)
     return
 
 
-def main(input_path="test-input-10.txt"):
+def main(input_path="2025/day-10/input-10.txt"):
     with open(input_path, "r") as f:
         input_data = f.readlines()
     
